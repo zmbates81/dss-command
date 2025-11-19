@@ -15,9 +15,23 @@ A lightweight, utility-focused web app for Dataiku DSS power users to monitor an
 This is a **standard Dataiku DSS web app** using the four core file types:
 
 1. **backend.py** - Python backend using Flask and Dataiku APIs
-2. **webapp.html** - HTML structure for the user interface
+2. **webapp.html** - HTML body content (DSS provides the document wrapper)
 3. **webapp.js** - JavaScript for dynamic interactions and API calls
 4. **webapp.css** - CSS styling focused on utility and readability
+
+### How DSS Standard Webapps Work
+
+**DSS Provides Automatically:**
+- HTML document structure (`<!DOCTYPE>`, `<html>`, `<head>`, `<body>` tags)
+- Flask `app` object for backend routes
+- JavaScript API functions like `getWebAppBackendUrl()`
+- Hosting and user authentication
+
+**You Provide:**
+- **HTML tab:** Body content only (no document structure tags)
+- **Backend tab:** Route handlers using `@app.route()` decorators
+- **JavaScript tab:** Your application logic
+- **CSS tab:** Styling for your content
 
 ## Installation
 
@@ -27,12 +41,18 @@ This is a **standard Dataiku DSS web app** using the four core file types:
 2. Go to the **Webapps** section
 3. Click **New Webapp** → **Standard Webapp**
 4. Name it "Project Command Center" or similar
-5. Copy the contents of each file:
-   - `backend.py` → Backend tab
-   - `webapp.html` → HTML tab
-   - `webapp.js` → JavaScript tab
-   - `webapp.css` → CSS tab
-6. Click **Save** and then **Preview**
+5. Copy the contents of each file into the corresponding tabs:
+   - **Backend tab** → Copy from `backend.py`
+   - **HTML tab** → Copy from `webapp.html` *(body content only - no DOCTYPE, html, or body tags)*
+   - **JavaScript tab** → Copy from `webapp.js`
+   - **CSS tab** → Copy from `webapp.css`
+6. Click **Save**
+7. Click **Reload Preview** to view the webapp
+
+### Important Notes:
+- **HTML Structure:** DSS automatically provides the HTML document wrapper. The HTML tab should contain only body content.
+- **Backend:** DSS automatically provides the Flask `app` object. Don't create your own.
+- **JavaScript API:** DSS provides `getWebAppBackendUrl()` function automatically.
 
 ## Usage
 
@@ -119,6 +139,32 @@ The modular structure allows easy customization:
 - Customize appearance in `webapp.css`
 
 ## Troubleshooting
+
+### Webapp won't load / blank page
+**Symptom:** Preview shows blank page or webapp doesn't render
+
+**Cause:** HTML tab contains full HTML document structure instead of body content only
+
+**Solution:**
+1. DSS provides the HTML wrapper automatically - you only need body content
+2. **REMOVE** these tags from HTML tab:
+   - `<!DOCTYPE html>`
+   - `<html>` and `</html>`
+   - `<head>` and `</head>`
+   - `<body>` and `</body>`
+3. Keep only the content that goes **inside** the body
+4. Save and click "Reload Preview"
+
+**Correct HTML tab structure:**
+```html
+<!-- Just your content, no document structure -->
+<header class="app-header">
+    <h1>Project Command Center</h1>
+</header>
+<main class="container">
+    <!-- Your app content here -->
+</main>
+```
 
 ### Backend won't start - "__ping" 404 errors in logs
 **Symptom:** Logs show repeated `GET /__ping HTTP/1.1" 404` errors, backend fails health checks
