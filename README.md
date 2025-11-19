@@ -76,8 +76,11 @@ The Python backend uses **Flask routes** to provide these endpoints:
 
 **Backend (Python):**
 ```python
-from flask import Flask, request, jsonify
-app = Flask(__name__)
+from flask import request, jsonify
+import dataiku
+
+# Note: 'app' object is automatically provided by DSS
+# Do NOT create it with app = Flask(__name__)
 
 @app.route('/project-info')
 def route_project_info():
@@ -117,17 +120,29 @@ The modular structure allows easy customization:
 
 ## Troubleshooting
 
+### Backend won't start - "__ping" 404 errors in logs
+**Symptom:** Logs show repeated `GET /__ping HTTP/1.1" 404` errors, backend fails health checks
+
+**Cause:** Creating your own Flask app instance instead of using DSS-provided one
+
+**Solution:**
+1. **REMOVE** any `app = Flask(__name__)` line from backend.py
+2. DSS automatically provides the `app` object - just use `@app.route()` directly
+3. Add the health check endpoint:
+   ```python
+   @app.route('/__ping')
+   def health_check():
+       return jsonify({'status': 'ok'}), 200
+   ```
+4. Save and restart the backend
+
 ### 404 Error - Data not loading
 **Symptom:** "Failed to load data: HTTP error! status: 404"
 
-**Cause:** Incorrect webapp configuration or missing backend setup
+**Cause:** Incorrect webapp configuration
 
 **Solution:**
-1. Ensure the Python backend tab has the Flask app initialized:
-   ```python
-   from flask import Flask
-   app = Flask(__name__)
-   ```
+1. Ensure backend.py does NOT create Flask app (no `app = Flask(__name__)`)
 2. Verify all routes use `@app.route()` decorators (not `do_get`/`do_post`)
 3. Confirm JavaScript uses `getWebAppBackendUrl()` function
 4. Save the webapp and refresh your browser

@@ -1,16 +1,16 @@
 """
 Dataiku DSS Project Command Center - Python Backend
 Provides Flask API endpoints for project info, scenarios, and jobs management.
+
+Note: The 'app' Flask object is automatically provided by DSS webapp framework.
+No need to create it with app = Flask(__name__)
 """
 
-from flask import Flask, request, jsonify
+from flask import request, jsonify
 import dataiku
 from dataiku import pandasutils as pdu
 from datetime import datetime
 import json
-
-# Initialize Flask app
-app = Flask(__name__)
 
 # Initialize Dataiku client
 client = dataiku.api_client()
@@ -273,6 +273,14 @@ def get_scenario_runs():
 
 
 # Flask routes - DSS webapp endpoints
+
+# Health check endpoint required by DSS
+@app.route('/__ping')
+def health_check():
+    """Health check endpoint for DSS backend monitoring."""
+    return jsonify({'status': 'ok'}), 200
+
+
 @app.route('/project-info')
 def route_project_info():
     """GET endpoint for project information."""
