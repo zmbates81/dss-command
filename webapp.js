@@ -522,9 +522,10 @@ function toggleAutoRefresh(enabled) {
 
 /**
  * Make GET request to backend
+ * Uses Dataiku's getWebAppBackendUrl to get the correct webapp URL
  */
 function getBackendData(route) {
-    return fetch(`/backend${route}`)
+    return fetch(getWebAppBackendUrl(route))
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -535,9 +536,10 @@ function getBackendData(route) {
 
 /**
  * Make POST request to backend
+ * Uses Dataiku's getWebAppBackendUrl to get the correct webapp URL
  */
 function postBackendData(route, data) {
-    return fetch(`/backend${route}`, {
+    return fetch(getWebAppBackendUrl(route), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

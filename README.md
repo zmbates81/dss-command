@@ -62,14 +62,35 @@ This is a **standard Dataiku DSS web app** using the four core file types:
 
 ## API Endpoints
 
-The Python backend provides these Flask endpoints:
+The Python backend uses **Flask routes** to provide these endpoints:
 
 - `GET /project-info` - Project metadata and summary
 - `GET /scenarios` - List all scenarios with status
 - `POST /run-scenario` - Trigger a scenario run
 - `POST /abort-scenario` - Abort a running scenario
 - `GET /jobs` - Get job status and history
+- `GET /scenario-runs` - Get detailed run history for a scenario
 - `POST /build-dataset` - Build a specific dataset
+
+### Technical Implementation
+
+**Backend (Python):**
+```python
+from flask import Flask, request, jsonify
+app = Flask(__name__)
+
+@app.route('/project-info')
+def route_project_info():
+    return get_project_info()
+```
+
+**Frontend (JavaScript):**
+```javascript
+// Use Dataiku's getWebAppBackendUrl() function
+fetch(getWebAppBackendUrl('/project-info'))
+    .then(response => response.json())
+    .then(data => console.log(data));
+```
 
 ## Design Philosophy
 
@@ -96,14 +117,39 @@ The modular structure allows easy customization:
 
 ## Troubleshooting
 
+### 404 Error - Data not loading
+**Symptom:** "Failed to load data: HTTP error! status: 404"
+
+**Cause:** Incorrect webapp configuration or missing backend setup
+
+**Solution:**
+1. Ensure the Python backend tab has the Flask app initialized:
+   ```python
+   from flask import Flask
+   app = Flask(__name__)
+   ```
+2. Verify all routes use `@app.route()` decorators (not `do_get`/`do_post`)
+3. Confirm JavaScript uses `getWebAppBackendUrl()` function
+4. Save the webapp and refresh your browser
+
 ### Scenarios won't run
 - Check dashboard authorization in Project Settings
 - Ensure scenario has "Run" permission enabled
+- Verify you have execution rights for the project
 
-### Data not loading
+### Data not loading (permissions)
 - Verify user has appropriate project permissions
-- Check browser console for JavaScript errors
+- Check browser console for JavaScript errors (F12)
 - Review DSS logs for backend errors
+- Ensure the webapp backend is running (check backend status in DSS)
+
+### JavaScript errors mentioning "getWebAppBackendUrl"
+**Cause:** The Dataiku JavaScript API may not be loaded
+
+**Solution:**
+- This function is automatically provided by DSS in standard webapps
+- If testing locally, you'll need to run this within DSS environment
+- Cannot be tested outside of DSS platform
 
 ## Contributing
 

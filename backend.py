@@ -3,11 +3,14 @@ Dataiku DSS Project Command Center - Python Backend
 Provides Flask API endpoints for project info, scenarios, and jobs management.
 """
 
-from flask import request, jsonify
+from flask import Flask, request, jsonify
 import dataiku
 from dataiku import pandasutils as pdu
 from datetime import datetime
 import json
+
+# Initialize Flask app
+app = Flask(__name__)
 
 # Initialize Dataiku client
 client = dataiku.api_client()
@@ -269,34 +272,44 @@ def get_scenario_runs():
         }), 500
 
 
-# Flask routing - this is called by DSS
-def do_get(route, args):
-    """Handle GET requests from the webapp."""
-    if route == '/project-info':
-        return get_project_info()
-    elif route == '/scenarios':
-        return get_scenarios()
-    elif route == '/jobs':
-        return get_jobs()
-    elif route == '/scenario-runs':
-        return get_scenario_runs()
-    else:
-        return jsonify({
-            'success': False,
-            'error': f'Unknown route: {route}'
-        }), 404
+# Flask routes - DSS webapp endpoints
+@app.route('/project-info')
+def route_project_info():
+    """GET endpoint for project information."""
+    return get_project_info()
 
 
-def do_post(route, args):
-    """Handle POST requests from the webapp."""
-    if route == '/run-scenario':
-        return run_scenario()
-    elif route == '/abort-scenario':
-        return abort_scenario()
-    elif route == '/build-dataset':
-        return build_dataset()
-    else:
-        return jsonify({
-            'success': False,
-            'error': f'Unknown route: {route}'
-        }), 404
+@app.route('/scenarios')
+def route_scenarios():
+    """GET endpoint for scenarios list."""
+    return get_scenarios()
+
+
+@app.route('/jobs')
+def route_jobs():
+    """GET endpoint for jobs information."""
+    return get_jobs()
+
+
+@app.route('/scenario-runs')
+def route_scenario_runs():
+    """GET endpoint for scenario run history."""
+    return get_scenario_runs()
+
+
+@app.route('/run-scenario', methods=['POST'])
+def route_run_scenario():
+    """POST endpoint to run a scenario."""
+    return run_scenario()
+
+
+@app.route('/abort-scenario', methods=['POST'])
+def route_abort_scenario():
+    """POST endpoint to abort a scenario."""
+    return abort_scenario()
+
+
+@app.route('/build-dataset', methods=['POST'])
+def route_build_dataset():
+    """POST endpoint to build a dataset."""
+    return build_dataset()
