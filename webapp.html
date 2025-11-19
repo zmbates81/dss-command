@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSS Project Command Center</title>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <h1 class="app-title">
+            <span class="icon">⚡</span>
+            Project Command Center
+        </h1>
+        <div class="header-actions">
+            <button id="refreshBtn" class="btn btn-secondary" title="Refresh all data">
+                <span class="icon">🔄</span> Refresh
+            </button>
+            <div class="auto-refresh-toggle">
+                <label>
+                    <input type="checkbox" id="autoRefresh">
+                    Auto-refresh (30s)
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Loading State -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Loading project data...</p>
+        </div>
+
+        <!-- Error Display -->
+        <div id="errorAlert" class="alert alert-error" style="display: none;">
+            <strong>Error:</strong> <span id="errorMessage"></span>
+        </div>
+
+        <!-- Success Messages -->
+        <div id="successAlert" class="alert alert-success" style="display: none;">
+            <span id="successMessage"></span>
+        </div>
+
+        <!-- Project Information Section -->
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">📊 Project Information</h2>
+            </div>
+            <div class="card-body">
+                <div id="projectInfo" class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Project Key:</span>
+                        <span class="value" id="projectKey">Loading...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Project Name:</span>
+                        <span class="value" id="projectName">Loading...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Datasets:</span>
+                        <span class="value" id="datasetCount">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Recipes:</span>
+                        <span class="value" id="recipeCount">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Scenarios:</span>
+                        <span class="value" id="scenarioCount">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Flow Nodes:</span>
+                        <span class="value" id="nodeCount">-</span>
+                    </div>
+                </div>
+                <div class="project-description">
+                    <p id="projectDescription"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenarios Section -->
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">⚙️ Scenario Manager</h2>
+                <span class="badge" id="scenarioBadge">0 scenarios</span>
+            </div>
+            <div class="card-body">
+                <div id="scenariosContainer">
+                    <p class="loading-text">Loading scenarios...</p>
+                </div>
+                <table id="scenariosTable" class="data-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Scenario Name</th>
+                            <th>Status</th>
+                            <th>Active</th>
+                            <th>Last Run</th>
+                            <th>Outcome</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scenariosTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Jobs Section -->
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">🔧 Job Monitor</h2>
+            </div>
+            <div class="card-body">
+                <!-- Running Jobs -->
+                <div class="job-section">
+                    <h3 class="section-subtitle">
+                        Running Jobs
+                        <span class="badge badge-info" id="runningJobCount">0</span>
+                    </h3>
+                    <div id="runningJobsContainer">
+                        <p id="noRunningJobs" class="empty-state">No jobs currently running</p>
+                        <div id="runningJobsList" class="job-list"></div>
+                    </div>
+                </div>
+
+                <!-- Recent Jobs -->
+                <div class="job-section">
+                    <h3 class="section-subtitle">
+                        Recent Jobs
+                        <span class="badge badge-secondary" id="recentJobCount">0</span>
+                    </h3>
+                    <div id="recentJobsContainer">
+                        <p id="noRecentJobs" class="empty-state">No recent jobs</p>
+                        <div id="recentJobsList" class="job-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions Section -->
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">⚡ Quick Actions</h2>
+            </div>
+            <div class="card-body">
+                <div class="action-grid">
+                    <div class="action-item">
+                        <label for="datasetSelect">Build Dataset:</label>
+                        <div class="action-controls">
+                            <select id="datasetSelect" class="select-input">
+                                <option value="">Select a dataset...</option>
+                            </select>
+                            <button id="buildDatasetBtn" class="btn btn-primary" disabled>
+                                Build
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <p>Last updated: <span id="lastUpdated">Never</span></p>
+    </footer>
+
+    <!-- Modal for Scenario Run History -->
+    <div id="runHistoryModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Run History: <span id="modalScenarioName"></span></h3>
+                <button class="modal-close" onclick="closeRunHistoryModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="runHistoryContent"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
